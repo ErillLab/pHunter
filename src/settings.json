@@ -1,0 +1,13 @@
+{
+	"promoter_set": "PromEC_seqs_filtered.fas",
+	"background_set": "NC_000913.3.fasta",
+	"input_sequences": "Input_Sequences.fas",
+	"moving_average_wlen": 50,
+	"step_size_pos": 101,
+	"step_size_neg": 101,
+	"right_motif": "Eco-10.fas",
+	"left_motif": "Eco-35.fas",
+	"min_spacer_value": 15,
+	"max_spacer_value": 18
+}
+	
