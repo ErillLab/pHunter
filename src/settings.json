@@ -1,0 +1,29 @@
+{
+	"promoter_set": "PromEC_seqs_filtered.fas",
+	"background_set": "NC_000913.3.fasta",
+	"GibbsFE_file": "GibbsFE.csv",
+	"input_sequences": "Input_Sequences.fas",
+	"output_information": "Output_Information.csv",
+	"step_size_pos": 101,
+	"step_size_neg": 101,
+	"GibbsFE_n_bins": 30,
+	"GibbsFE_pseudocounts": 1,
+	"right_motif": "Eco-10.fas",
+	"right_motif_threshpres": 1000,
+	"right_motif_pseudocounts": 0.05,
+	"left_motif": "Eco-35.fas",
+	"left_motif_threshpres": 1000,
+	"left_motif_pseudocounts": 0.05,
+	"min_spacer_value": 15,
+	"max_spacer_value": 18,
+	"DNAopen_dist": 50.5,
+	"round_info": {
+		"left_score": 2,
+		"right_score": 2,
+		"Average_GibbsFE": 2,
+		"GibbsFE_Log-Likelihood": 2,
+		"Final_Score": 2
+	}
+	
+}
+	
