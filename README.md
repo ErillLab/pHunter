@@ -7,7 +7,7 @@ that use both *PSSMs* and *Gibbs Free Energy* to find putative promoter sites.
 binds in order to translate a gene. *Gibbs Free Energy* is used to find sections in the
 genome that are thermodynamically predisposed to unzipping (sites where the holoenzyme likely binds to in order to initiate transcription).
 
-##About
+## About
 
 The general process by which the program finds promoters is as follows:
 
@@ -40,21 +40,21 @@ To read more about the steps above, please take a look at `user_manual.md` and `
 
 ## Working with the Program
 
-###Python Dependencies
+### Python Dependencies
 __pHunt__ runs on python 3.9.12 and depends on packages listed in `pHunt_env.yaml`. All dependencies can be installed using pip:
 
 >pip install -r pHunt_env.yaml
 
-###Dependencies
+### Dependencies
 * `numpy`
 * `Biopython`
 
-###Running the program
+### Running the program
 >import pHunt
 >
 >pHunt.go()
 
-###Input
+### Input
 
 pHunt expects a local directory set up the same as this Github directory. This is essential to the program's functioning
 since the program expects to find certain files in certain subdirectories.
@@ -88,7 +88,6 @@ since the program expects to find certain files in certain subdirectories.
 
 The pHunt program uses a JSON file format (`settings.json`) to collect user input. Below is a sample json file
 
->{
 
     "mode_fscr": "norm",
     "LLR_specific_parameters": {
@@ -117,14 +116,14 @@ The pHunt program uses a JSON file format (`settings.json`) to collect user inpu
     "output_information": "Pseudotestgenomefitted2_Diagnostic.csv",
     "output_type":"all hits"
 
->  }
+
 
 To use parameters other than the recommended ones (default at settings.json), edit the settings.json file or create a new json file with the same format. Specifics about what each parameter does and permitted values can be found in `settings.md`
 
 ## output
 pHunt produces a csv file in the data folder with hits sorted by Final Score for each sequence inputted by the user. The file can either contain *all hits* above the threshold for each sequence or only the *top hits* for each sequence (adjustable in the json file).
 
-##Accessing additional documentation about the program
+## Accessing additional documentation about the program
 
 In the documentation subfolder you will find:
 
