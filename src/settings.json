@@ -1,0 +1,29 @@
+{	
+	"mode_fscr": "LLR",
+	"LLR_specific_parameters": {
+		"promoter_set": "PromEC_seqs_filtered.fas",
+		"background_set": "negativeset.csv",	
+		"step_size_genome": 101,
+		"GibbsFE_n_bins": 30,
+		"GibbsFE_pseudocounts": 1
+	},
+	"use_GibbsFE": true,
+	"GibbsFE_related_parameters": {
+		"GibbsFE_file": "GibbsFE.csv",
+		"GibbsFE_windowsize": 50,
+		"lerg": 12,
+		"rerg": 13
+	},
+	"input_sequences": "PromEC_extend_hundredbp.fasta",
+	"use_GCcont_background": false,
+	"left_motif": "Eco-35.fas",
+	"left_motif_pseudocounts": 0.25,
+	"right_motif": "Eco-10.fas",
+	"right_motif_pseudocounts": 0.25,
+	"motif_threshold": "patser",
+	"min_spacer_value": 15,
+	"max_spacer_value": 18,
+	"output_information": "Pseudotestgenomefitted2_Diagnostic.csv",
+	"output_type":"all hits"
+
+}
