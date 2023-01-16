@@ -12,7 +12,7 @@ The `settings.json` file is json, meaning variables are stored using a java scri
 	- By setting this parameter to LLR, the program will convert Gibbs Free Energy into a log-likelihood ratio by taking in a promoter and background set of sequences, constructing a positive likelihood estimate and a negative likelihood estimate, and using the average Gibbs Free Energy around the -10 sequence of a hit to convert these distributions into frequencies. By taking the logarithm of the ratio of these frequencies, the PSSM scores and Gibbs Free Energy can be summed together as LLRs.
 	- By setting this parameter to norm, the program will forego the code to convert Gibbs Free Energy to a log-likelihood ratio and instead normalize the average Gibbs Free Energy value around the -10 sequence of a hit. By normalizing the PSSM scores as well and using a coefficient of 2 for the normalized Gibbs Free Energy value, final score is computed as the sum of normalized values
 
-##LLR_specific_parameters
+## LLR_specific_parameters
 The following parameters are only required if the user enters 'LLR' for `mode_fscr`
 
 ### Positive and Negative Set
@@ -68,7 +68,7 @@ The following parameters are only required if the user enters 'LLR' for `mode_fs
 
 
 
-##GibbsFE_related_parameters
+## GibbsFE_related_parameters
 The following parameters are only required if the user inputs true for `use_GibbsFE`
 
 ### GibbsFE_file
