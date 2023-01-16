@@ -29,19 +29,19 @@ The PhiSite (**PS**) Promoter Hunter is an example of one of these generic promo
 
 Change in Gibbs Free Energy is often associated with the following equation:
 
-![GibbsFEequation.jpg](GibbsFEequation.jpg)
+![GibbsFEequation.jpg](images/GibbsFEequation.jpg)
 
 where an increase in entropy and a decrease in enthalpy are associated with spontaneity.
 
 In this program, Change in Gibbs Free Energy of melting in DNA sequences is explored.
 
-![DNAmelting.png](DNAmelting.png)
+![DNAmelting.PNG](images/DNAmelting.PNG)
 
 The point in exploring change in GibbsFE<sub>melting</sub> in the genome is that certain locations will more spontaneously melt or unzip due to a lower thermodynamic potential while open or a higher thermodynamic potential while closed (making it relatively easier to unzip). The region around the holoenzyme's binding sites tend to have a lower change in GibbsFE<sub>melting</sub> to assist in the enzyme's unzipping of the surrounding sequence to initiate transcription. An example of the difference in change in GibbsFE<sub>melting</sub> between promoter regions and non-promoter regions can be shown through the histogram below.
 
 The histogram uses a dataset acquired from E. coli, with the histogram on the left being promoter regions and the histogram on the right being non-promoter regions. Each promoter and non-promoter sequence was converted into a Gibbs Free Energy value by translating the region's dinucleotides into a Gibbs Free Energy contribution and averaging over a window size, creating an array of averaged Gibbs Free Energy values reflecting the thermodynamic instability of the promoter sequences or non-promoter sequences. These average values were then sorted into bins of differing GibbsFE value ranges. The frequencies of promoters/non-promoters within these bins are reflected on the y axis. On the x axis, the bins are sorted in ascending order of average Gibbs Free Energy value.
 
-![GibbsFE_diff.png](GibbsFE_diff.png)
+![GibbsFE_diff.png](images/GibbsFE_diff.png)
 
 As shown above, promoters tend to have a lower average Gibbs Free Energy than non-promoters.
 
@@ -57,7 +57,7 @@ There are several changes made in pHunt that were not in the PhiSite Promoter Hu
 ### The move from a sum of normalized values to a sum of Log-Likelihood Ratios
 PS calculates Final Score as the summation of normalized values with arbitrary coefficients applied. The Final Score is pictured below:
 
-![NormFinalScore.png](NormFinalScore.png)
+![NormFinalScore.png](images/NormFinalScore.PNG)
 
 Computing Final Score in this manner is suboptimal for a variety of reasons. Firstly, weighting of Gibbs Free Energy or the PSSM scores by applying any coefficient to their normalized values would be arbitrarily determined. Secondly, normalization of the two PSSM scores ignores any difference in the amount of information content provided by either of the motifs.
 
@@ -65,7 +65,7 @@ There is a non-arbitrary way to sum the contributions of the PSSMs and Gibbs Fre
 
 By training the program on datasets of promoters and non-promoters converted to Gibbs Free Energy distributions, Gibbs Free Energy is successfully converted into a Log-Likelihood Ratio. The revised Final Score is pictured below
 
-![LLRFinalScore.png](LLRFinalScore.png)
+![LLRFinalScore.png](images/LLRFinalScore.PNG)
 
 > Note: Final Score can be computed in both the normalized and LLR manner in the program. The performance difference between these parameters is investigated in `benchmarking.md`
 
@@ -111,7 +111,7 @@ This is done by first generating a moving average GibbsFE array from the input s
 
 Left range is calculated as the sum of the distance to the left of the -10 sequence where unzipping occurs (lerg - Customizable by the user), a left shift calculated as half of the window size to account for the first averaging, and the length of the right motif. Right range is calculated as the sum of the distance to the right of the -10 sequence where unzipping occurs (rerg - Customizable by the user), a left shift calculated as half of the window size to account for the first averaging, and the length of the right motif. The equation used in the program is pictured below.
 
-![Rangescalculation.png](Rangescalculation.png)
+![Rangescalculation.png](images/rangescalculation.PNG)
 
 As shown above, the ranges are also bounded so as to prevent the ranges from surpassing the indices of the moving average array.
 
@@ -123,12 +123,12 @@ If the program is set to the LLR mode for computing the final score, it will use
 
 In hits that pass the two thresholds, the left PSSM score is calculated, the right PSSM score is calculated, and the GibbsFE LLR is calculated. This three values are summed to calculate the final score. Through this process, hits are generated for an input sequence, sorted by final score, and displayed in the output file.
 
-![LLRFinalScore.png](LLRFinalScore.png)
+![LLRFinalScore.png](images/LLRFinalScore.PNG)
 
 #### Calculating the normalized Final score
 If the program is set to the norm mode for computing the final score, it will use the double averaged Gibbs Free Energy value to compute a normalized Gibbs Free Energy value by calculating a minimum GibbsFE value and a maximum GibbsFE value and performing the following equation:
 
-![normequation.png](normequation.png)
+![normequation.png](images/normequation.PNG)
 
 The program will then compute the normalized PSSM scores using the same equation.
 
