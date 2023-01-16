@@ -41,18 +41,33 @@ To read more about the steps above, please take a look at `user_manual.md` and `
 ## Working with the Program
 
 ### Python Dependencies
-__pHunt__ runs on python 3.9.12 and depends on packages listed in `pHunt_env.yaml`. All dependencies can be installed using pip:
+__pHunt__ runs on python 3.9.12 and depends on packages listed in `pHunt_env.yaml`. All dependencies can be installed by setting up a conda environment using the following commands:
 
->pip install -r pHunt_env.yaml
+> $ conda env create -f pHunt_env.yaml
+
+To activate the environment:
+
+> $ conda activate pHunt_env
+
+To deactivate the environment:
+
+> $ conda deactivate
 
 ### Dependencies
 * `numpy`
 * `Biopython`
 
 ### Running the program
->import pHunt
+In the anaconda terminal, please change the path to the location of the `src` folder in your machine:
+
+> cd (absolute path of src folder)
+
+Run python, import the main `pHunt` file, and run the go function to run the program:
+
+>python
+> <p>>>>import pHunt
 >
->pHunt.go()
+><p>>>>pHunt.go()
 
 ### Input
 
