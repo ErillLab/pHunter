@@ -1,6 +1,3 @@
-
-Note to myself: Make sure to deal with unzip dist in pHunt
-
 As discussed in `user_manual.md`, several changes were made in **pHunt** that were not offered in the **Phisite Promoter Hunter**, including calculating the final score as a summation of Log-Likelihood Ratios and using a smaller window size to compute Gibbs Free Energy.
 
 The following document seeks to explore the performance effects of some of these changes
