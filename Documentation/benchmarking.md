@@ -97,4 +97,6 @@ The rationale for using Gibbs Free Energy was presented in `User_manual.md`. The
 
 **PhiSite_noGibbsFE: 0.55181**
 
-This was not expected. Gibbs Free Energy should reflect the regions where the holoenzyme is likely to unzip, and therefore, regions likely to be promoters. This data may suggest information provided by Gibbs Free Energy may overlap with information provided by the PSSMs.
+Looking at the pHunt default settings performance with and without Gibbs Free Energy, it appears as if Gibbs Free Energy does not improve performance of the program. This is unexpected. Gibbs Free Energy should reflect the regions where the holoenzyme is likely to unzip, and therefore, regions likely to be promoters. This data may suggest information provided by Gibbs Free Energy may overlap with information provided by the PSSMs.
+
+However, for the PhiSite pHunt settings performance with and without Gibbs Free Energy, it appears as if Gibbs Free Energy hurts the performance of the program. This must be due to PhiSite's improper handling of Gibbs Free Energy via normalization.
