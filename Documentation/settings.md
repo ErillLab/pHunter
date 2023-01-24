@@ -139,15 +139,6 @@ The following parameters are only required if the user inputs true for `use_Gibb
 - Rationale/Format:
 	- Fasta file containing instances of the left motif used to search for -35 sequences in each sequence in the `input_sequences` file.
 
-### left_motif_pseudocounts
-- Type: `Float`
-- Allowed values:
-	- Any floating value above 0.0
-- Default value: 0.25
-- Rationale/Format:
-	- Pseudocount value applied to the Position specific-scoring matrix of the left motif prevent any base at any position in the matrix from yielding a negative infinity value.
-	- Float value assigned to ._pseudocounts propery of the left motif object.
-
 ### right_motif
 - Type: `String`
 - Allowed values:
@@ -156,7 +147,28 @@ The following parameters are only required if the user inputs true for `use_Gibb
 - Rationale/Format:
 	- Fasta file containing instances of the right motif used to search for -10 sequences in each sequence in the `input_sequences` file.
 
-### right_motif_pseudocounts
+### use_GCcont_pseudocnt
+- Type: `Boolean`
+- Allowed values:
+	- *true* or *false*
+- Default value: *false*
+- Rationale/Format:
+	- Pseudocount values are applied to the alternative hypothesis of the PSSM log-likelihood ratio to prevent the score from going to negative infinity (accounts for the difference between probability and frequency). The PhiSite promoter hunter uses the base pair frequency of the input sequence as a pseudocount value for the PSSM
+	- The default value is false since the numerator of the PSSM log-likelihood ratio describes the binding affinity of the transcription factor, which is not beholden to the GC content of the sequence surrounding a binding site.
+
+### non-GCcont_pseudocount
+The following two parameters are only required if the input to `use_GCcont_pseudocnt` was false
+
+#### left_motif_pseudocounts
+- Type: `Float`
+- Allowed values:
+	- Any floating value above 0.0
+- Default value: 0.25
+- Rationale/Format:
+	- Pseudocount value applied to the Position specific-scoring matrix of the left motif prevent any base at any position in the matrix from yielding a negative infinity value.
+	- Float value assigned to ._pseudocounts propery of the left motif object.
+
+#### right_motif_pseudocounts
 - Type: `Float`
 - Allowed values:
 	- Any float value above 0.0

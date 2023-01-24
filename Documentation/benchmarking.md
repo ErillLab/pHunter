@@ -1,4 +1,4 @@
-As discussed in `user_manual.md`, several changes were made in **pHunt** that were not offered in the **Phisite Promoter Hunter**, including calculating the final score as a summation of Log-Likelihood Ratios and using a smaller window size to compute Gibbs Free Energy.
+As discussed in `user_manual.md`, several changes were made in **pHunt** that were not offered in the **Phisite Promoter Hunter**, including calculating the final score as a summation of Log-Likelihood Ratios and using motif pseudocount values that did not depend on the base pair frequency of the inputted sequence.
 
 The following document seeks to explore the performance effects of some of these changes
 
@@ -23,73 +23,78 @@ Recall will be calculated on hits made by the program at various thresholds for 
 For our use, each sequence within the test set will have one Condition Positive, located within the middle 100 base pairs of the sequence. If the program reports a hit above the threshold that is located anywhere within the middle 100 base pairs of a sequence, the program is considered to have found the true positive for that sequence. A recall value of 1.0 is achieved when the program reports at least one hit within the middle of each test set sequence.
 
 # Performance Evaluations
-The following performance evaluations were conducted with the default parameters available at `settings.json`, unless specified otherwise.
+The following performance evaluations were conducted with the default parameters available at `settings.json`, unless specified otherwise. Please note, the following document is organized so that it may explore the performance differences between the PhiSite promoter hunter and pHunt. After, the document decouples the parameters to explore the performance impacts of each parameter that is different between the PhiSite Promoter Hunter and pHunt.
 
 ## Comparing pHunt's default parameters vs PhiSite pHunt Settings
 For pHunt's default parameters, the parameters available in `settings.json` were used
 
 For PhiSite pHunt settings, the parameters available in `settings-PhiSite.json` were used
 
-We suspect pHunt with its default parameters to perform better than pHunt with Phisite settings due to the fact that we except a final score of Log-Likelihood ratios (non-arbitrary) to perform better than a final score of normalized values (arbitrary), and we except a smaller Gibbs Free Energy window size to better reflect the localized dips in Gibbs Free Energy in the sequences within the test set
+We suspect pHunt with its default parameters to perform better than pHunt with Phisite settings primarily due to the fact that we expect a final score of Log-Likelihood ratios (non-arbitrary) to perform better than a final score of normalized values (arbitrary)
 
-![pHuntvsPS.png](images/pHuntvsPS.png)
+![pHuntvsPS.png](images/pHuntvsPhiSite.png)
 
-**pHuntsettings AUC: 0.53722**
+**pHunt_settings AUC: 0.47667**
 
-**PhiSitesettings AUC: 0.58431**
+**PhiSite_settings AUC: 0.37643**
 
-As shown in the PR curve above, our expectations are not completely reflected in the data. Although pHunt_settings possesses a higher precision value than PhiSite_settings from a recall range of 0.0 to 0.3, PhiSite_settings possess a higher precision value than pHunt_settings over a recall range of 0.3 to 1.0. Why is this? The following performance evaluations explore the performance impacts of each parameter that is different between pHunt_settings and PhiSite_settings.
+As shown in the PR curve above and the AUC measurements, our expectations are reflected in the data: using the default pHunt settings yields superior performance. However, how does each parameter change impact the performance? The following performance evaluations explore the performance impacts of each parameter that is different between pHunt_settings and PhiSite_settings.
 
 ### Calculating Final Score as the summation of Log-Likelihood Ratios vs the summation of normalized values
-To compare the two final score methods within the algorithm, the default parameters are used, except `mode_fscr` which dictates whether normalization or Log-Likelihood Ratio summation is used.
+To compare the two final score methods within the algorithm, the default parameters for pHunt are used, except `mode_fscr` which dictates whether normalization or Log-Likelihood Ratio summation is used.
 
 We expect pHunt with a final score computed as the summation of Log-Likelihood Ratios to perform better than a pHunt with a final score computed as the summation of normalized values.
 
 ![LLRvsnorm.png](images/LLRvsnorm.png)
 
-**LLR_finalscore AUC: 0.53722**
+**pHunt_LLR AUC: 0.47667**
 
-**norm_finalscore AUC: 0.43397**
+**pHunt_norm AUC: 0.36195**
 
-As we suspected, LLR_finalscore performs better than normalized_finalscore with a higher AUC and precision values that are higher than normalized_finalscore at the same recall value. This is what we suspected in `User_manual.md`; Normalizing PSSM scores and Gibbs Free Energy contributions does not make sense since the coefficients are arbitrary and normalizing PSSM scores disregards differences in information content between the two PSSMs. This difference in final score computation did not cause the surprise seen above between PhiSite pHunt and default pHunt
+As we suspected, pHunt_LLR performs better than pHunt_norm with a higher AUC and precision values that are higher than pHunt_norm at the same recall values. This is what we suspected in `User_manual.md`; Normalizing PSSM scores and Gibbs Free Energy contributions does not make sense since the coefficients are arbitrary and normalizing PSSM scores disregards differences in information content between the two PSSMs. Comparing the ROC curves, this metric most likely caused the biggest difference between the performances of the PhiSite promoter hunter and pHunt.
 
-### Smaller Gibbs Free Energy window vs Larger Gibbs Free Energy window
-The PhiSite Promoter Hunter uses a range (lrange and rrange are discussed in `User_manual.md`) larger than 100 bp when computing the Gibbs Free Energy around a hit.
+### Equal Frequency Null vs Sequence Base Pair Frequency Null
+As discussed in `User_manual.md`, the PhiSite promoter hunter uses the base pair frequency of the inputted sequence as the null hypothesis when computing the PSSM Log-likelihood ratio while pHunt's default settings use an equal frequency of each base pair for the PSSM's null hypothesis.
 
-Based on performed analysis of 100 bp promoter sequences, the dip in Gibbs Free Energy within the promoter sequence is localized within less than 25 bp. The following graph reflects the average Gibbs Free Energy of the test set sequences across different base pair positions, using a moving average of 25 base pairs. The ligher blue line represents the standard deviation.
+To compare the two null hypotheses within the algorithm, the default parameters for pHunt are used, except `use_GCcont_background` which dictates whether the base pair frequency of the inputted sequence is used or an equal base pair frequency is used when calculating PSSM scores.
 
-![AverageGibbsFE.PNG](images/AverageGibbsFE.PNG)
+![EqualFreqvsGCcont.png](images/EqualFreqvsSeqBpFreqNull.png)
 
-As seen above, the dip in Gibbs Free Energy is localized from around the 150th bp to the 175th bp.
+**pHunt_EqualFreqNull: 0.47667**
 
-A smaller Gibbs Free Energy window was used in the default parameters. We expect a smaller window size to perform better than a larger window size due to a smaller window size better reflecting the dip in Gibbs Free Energy.
+**pHunt_SeqBpFreqNull: 0.53927**
 
-![smallvslargewsize.png](images/smallvslargewsize.png)
+Using a PSSM null hypothesis based on the base pair frequency provides a slight increase in performance in contrast to an equal frequency null.
 
-**normal_GibbsFEwindow AUC: 0.53722**
+Note: Tests with coding sequences as conditional negatives have shown a null based on base pair frequency to provide a high increase in performance. This is suspected to result from the higher GC content in CDS sequences and the fact that this null down-weights Guanine and Cytosine bases compared to a null based on equal base pair frequency.
 
-**smallvslargewsize AUC: 0.47667**
+### Constant pseudocount value vs Base Pair frequency pseudocount value
+As discussed in `User_manual.md`, the PhiSite promoter hunter uses the base pair frequency of the inputted sequence for the pseudocount value when computing the PSSM Log-likelihood ratio while pHunt's default settings use an 0.25 pseudocount value for the PSSM's alternative hypothesis
 
-As expected, a smaller window size better recognizes the dip in Gibbs Free Energy present within promoter sequences and is recommended over PhiSite's large window size. This difference in window size did not cause the surprise seen above between PhiSite pHunt and default pHunt
+The choice to move away from a pseudocount value based on the bp frequency of the input sequence was made as the numerator of the PSSM log-likelihood ratio (where the pseudocount value is applied to account for the difference between probability and frequency) describes the binding affinity of the TF, which should not be beholden to the base pair frequency of the surrounding region where the TF binds)
 
-### Equal Frequency Null vs GC Content Null
-As discussed in `User_manual.md`, the PhiSite promoter hunter uses the GC content of the inputted sequence when computing the PSSM Log-likelihood ratio while pHunt's default settings use an equal frequency of each base pair for the PSSM's null hypothesis.
+To compare the two pseudocounts within the algorithm, the default parameters for pHunt are used, except `use_GCcont_pseudocnt` which dictates whether the base pair frequency of the inputted sequence is used or an equal base pair frequency is used for the pseudocount when calculating PSSM scores.
 
-![EqualFreqvsGCcont.png](images/EqualFreqvsGCcont.png)
+![constantpcvsbpfreqpc.png](images/constantpcvsbpfreqpc.png)
 
-**equalfrequency_null: 0.53722**
+**pHunt_ConstantPseudocount AUC: 0.47667**
 
-**GCcont_null: 0.73572**
+**pHunt_SeqBpFreqPseudocount AUC: 0.47601**
 
-Using a GC content null hypothesis when computing PSSM scores seem to account for the surprise seen between pHunt default settings and PhiSite settings.
+As expected, the pseudocount value does not make much of a difference when searching for true promoter regions. It is, however, still recommended to go with a constant pseudocount value so as to obey the principle suggested earlier.
+
 
 ## The Performance Impact of Gibbs Free Energy
-The rationale for using Gibbs Free Energy was presented in `User_manual.md`. The performance impacts are explored below
+The rationale for using Gibbs Free Energy was presented in `User_manual.md`. The performance impacts are explored below with both the pHunt default settings and the PhiSite settings.
 
-![UsingGibbsFE.png](images/UsingGibbsFE.png)
+![UsingGibbsFE.png](images/GibbsFEvsnoGibbsFE.png)
 
-**UsingGibbsFE: 0.53722**
+**pHunt_GibbsFE: 0.47667**
 
-**NotUsingGibbsFE: 0.73572**
+**pHunt_noGibbsFE: 0.54078**
 
-This was not expected. Gibbs Free Energy should reflect the regions where the holoenzyme is likely to unzip, and therefore, regions likely to be promoters. This data may suggest information provided by Gibbs Free Energy may overlap with information provided by the PSSMs. 
+**PhiSite_GibbsFE: 0.37643**
+
+**PhiSite_noGibbsFE: 0.55181**
+
+This was not expected. Gibbs Free Energy should reflect the regions where the holoenzyme is likely to unzip, and therefore, regions likely to be promoters. This data may suggest information provided by Gibbs Free Energy may overlap with information provided by the PSSMs.
