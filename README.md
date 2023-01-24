@@ -104,28 +104,31 @@ since the program expects to find certain files in certain subdirectories.
 The pHunt program uses a JSON file format (`settings.json`) to collect user input. Below is a sample json file
 
 
-    "mode_fscr": "norm",
+    "mode_fscr": "LLR",
     "LLR_specific_parameters": {
-    	"promoter_set": "PromEC_seqs_filtered.fas",
-    	"background_set": "negativeset.csv",
-    	"step_size_genome": 101,
-    	"GibbsFE_n_bins": 30,
-    	"GibbsFE_pseudocounts": 1
+      "promoter_set": "PromEC_seqs_filtered.fas",
+      "background_set": "negativeset.csv",
+      "step_size_genome": 101,
+      "GibbsFE_n_bins": 30,
+      "GibbsFE_pseudocounts": 1
     },
-    "use_GibbsFE": false,
+    "use_GibbsFE": true,
     "GibbsFE_related_parameters": {
-    	"GibbsFE_file": "GibbsFE.csv",
-    	"GibbsFE_windowsize": 50,
-    	"lerg": 12,
-    	"rerg": 13
+      "GibbsFE_file": "GibbsFE.csv",
+      "GibbsFE_windowsize": 50,
+      "lerg": 100,
+      "rerg": 30
     },
-    "input_sequences": "PromEC_extend_hundredbp.fasta",
+    "input_sequences": "PromEC_seqs_filterededitextended.fas",
     "use_GCcont_background": false,
     "left_motif": "Eco-35.fas",
-    "left_motif_pseudocounts": 0.25,
     "right_motif": "Eco-10.fas",
-    "right_motif_pseudocounts": 0.25,
-    "motif_threshold": "original",
+    "use_GCcont_pseudocnt": false,
+    "non-GCcont_pseudocount": {
+      "left_motif_pseudocounts": 0.25,
+      "right_motif_pseudocounts": 0.25
+    },
+    "motif_threshold": "patser",
     "min_spacer_value": 15,
     "max_spacer_value": 18,
     "output_information": "Pseudotestgenomefitted2_Diagnostic.csv",
