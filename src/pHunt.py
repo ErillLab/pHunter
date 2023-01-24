@@ -97,7 +97,7 @@ def GibbsFE_likelihood(Seq_Object, sampling_size, GibbsFEdict, GibbsFE_n_bins, G
     return hist_freq, bin_edge
 
 
-def pHunt(mySeq, lmot, lthrs, rmot, rthrs, GC_null_hypo, minD, maxD,use_GibbsFE, mode, lerg = None, rerg = None, wsize = None, GibbsFEDict = None, posdist = None, negdist = None, binedges = None):
+def pHunt(mySeq, lmot, lthrs, rmot, rthrs, GC_null_hypo, GC_pseudocnt, minD, maxD,use_GibbsFE, mode, lerg = None, rerg = None, wsize = None, GibbsFEDict = None, posdist = None, negdist = None, binedges = None):
     '''
     Predicts putative promoter regions (-35, spacer, -10) in a given sequence, following the PromoterHunter approach.
      The final score of a putative promoter is determined by summing the contributions of the left motif, right motif, and Gibbs Free Energy.
@@ -129,7 +129,8 @@ def pHunt(mySeq, lmot, lthrs, rmot, rthrs, GC_null_hypo, minD, maxD,use_GibbsFE,
      rmot: Motif Object - -10 motif 
      rthrs: Int - Score threshold for -10 motif
          Note: If the user selects, right threshold can be calculated as the Phisite promoter hunter does (median + stdev)
-     null_hypo: Boolean - Determines whether or not GC content of the sequence is used in the background for PSSM scores
+     GC_null_hypo: Boolean - Determines whether or not GC content of the sequence is used in the background for PSSM scores
+     GC_pseudocnt: Boolean - Determines whether or not GC content of the sequence is used to determine pseudocount. 
      minD: Int - Minimum spacer value
      maxD: Int - Maximum spacer value
      use_GibbsFE: Boolean - True to incoporate GibbsFE into promoter hunter. 
@@ -152,17 +153,29 @@ def pHunt(mySeq, lmot, lthrs, rmot, rthrs, GC_null_hypo, minD, maxD,use_GibbsFE,
     disregard_GibbsFE = False
     
     
-    #Calculates GC content and changes background model if the user inputs True
-    if GC_null_hypo == True:
+    #Calculates GC content if necessary for background or pseudocount
+    if GC_null_hypo == True or GC_pseudocnt == True:
         
         #Initializes dictionary with frequencies of base pairs
         GC_cont_dict = Det_Nuc_Freq(mySeq)
         
-        #Sets the background of the right motif
-        rmot.background = GC_cont_dict
+        #Sets the background based on GC content
+        if GC_null_hypo == True:
+            
+            #Sets the background of the right motif
+            rmot.background = GC_cont_dict
+            
+            #Sets the background of the left motif
+            lmot.background = GC_cont_dict
         
-        #Sets the background of the left motif
-        lmot.background = GC_cont_dict
+        #Sets the pseudocount value based on GC content
+        if GC_pseudocnt == True:
+            
+            #Sets the pseudocount of the right motif
+            rmot._pseudocounts = GC_cont_dict
+            
+            #Sets the pseudocount of the left motif
+            lmot._pseudocounts = GC_cont_dict
         
 
         
@@ -229,7 +242,7 @@ def pHunt(mySeq, lmot, lthrs, rmot, rthrs, GC_null_hypo, minD, maxD,use_GibbsFE,
                     
                         #Issue when both lrange and rrange are out of range of the averaged vector
                         #Prepares to raise a warning and disregard GibbsFE contribution in these cases
-                        if lrange >= len(fes) - 1 or rrange <= 0:
+                        if lrange > len(fes) - 1 or rrange < 0:
                             warnings.warn('Lrange value is higher than last index of the averaged Gibbs Free Energy vector' + 
                                           ' or Rrange value is lower than first index of the vector. ' +
                                           'Use larger lerg/rerg values or a smaller window size. '
@@ -462,12 +475,17 @@ def go():
     else:
         raise(Exception('Non-valid motif file format. Please use a fasta file or jaspar file for the -10 motif'))
     
+    #Initializes variable to determine whether pseudocount is dependent on sequence base pair frequency
+    GC_pseudocnt = json_file["use_GCcont_pseudocnt"]
     
-    #Assigns left motif psuedocount based on values in json
-    lmot._pseudocounts = json_file["left_motif_pseudocounts"]
-    
-    #Assigns right motif psuedocount based on values in json
-    rmot._pseudocounts = json_file["right_motif_pseudocounts"]
+    #Assigns individual pseudocounts if the above statement is false
+    if GC_pseudocnt == False:
+        
+        #Assigns left motif psuedocount based on values in json
+        lmot._pseudocounts = json_file["non-GCcont_pseudocount"]["left_motif_pseudocounts"]
+        
+        #Assigns right motif psuedocount based on values in json
+        rmot._pseudocounts = json_file["non-GCcont_pseudocount"]["right_motif_pseudocounts"]
     
     #Assigns null hypothesis for PSSM score to variable (GC content based or random)
     null_hypo = json_file["use_GCcont_background"]
@@ -633,10 +651,10 @@ def go():
             #If else statement removing parameters if the program is PSSM only
             if use_GibbsFE == True:
                 #Stores hits for each promoter as a list of dictionaries
-                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, minD, maxD, use_GibbsFE, 'LLR', lerg, rerg, wsize, GibbsFEdict, posdist, negdist, bin_edges)
+                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, GC_pseudocnt, minD, maxD, use_GibbsFE, 'LLR', lerg, rerg, wsize, GibbsFEdict, posdist, negdist, bin_edges)
             
             else:
-                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, minD, maxD, use_GibbsFE, 'LLR')
+                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, GC_pseudocnt, minD, maxD, use_GibbsFE, 'LLR')
             
             #Sorts list by score in descending order
             hit_sorted = sorted(hit, key = lambda k: k['Fscr'], reverse=True)
@@ -658,10 +676,10 @@ def go():
             #If else statement removing variable inputs if the program is PSSM only
             if use_GibbsFE == True:
                 #Stores hits for each promoter as a list of dictionaries
-                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, minD, maxD, use_GibbsFE, 'norm', lerg, rerg, wsize, GibbsFEdict)
+                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, GC_pseudocnt, minD, maxD, use_GibbsFE, 'norm', lerg, rerg, wsize, GibbsFEdict)
             
             else:
-                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, minD, maxD, use_GibbsFE, 'norm')
+                hit = pHunt(sequence.seq, lmot, lthrs, rmot, rthrs, null_hypo, GC_pseudocnt, minD, maxD, use_GibbsFE, 'norm')
                 
             #Sorts hits based on final score
             hit_sorted = sorted(hit, key = lambda k: k['Fscr'], reverse=True)
@@ -702,6 +720,7 @@ def go():
             #Iterates through list of hits for all sequences to get the list of hits for each sequence
             for prom_hit in seq_hits:
                 
+
                 #Skips a sequence if it does not have hits
                 if len(prom_hit) > 0:
                     
@@ -711,7 +730,7 @@ def go():
                     
                     #Writes all hits for each sequence
                     elif output_type == 'all hits':
-                        
+                    
                         #Iterates through hits to write each hit
                         for hit in prom_hit:
                             write_file(writer,hit,mySeq,seq_counter,'LLR')
@@ -738,9 +757,10 @@ def go():
                     
                     #Writes all hits for each sequence
                     elif output_type == 'all hits':
-                        
+                
                         #Iterates through hits to write each hit
                         for hit in prom_hit:
+
                             write_file(writer,hit,mySeq,seq_counter,'norm')
     
                     else:
